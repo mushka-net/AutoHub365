@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import mongoengine
+from datetime import timedelta
+from rest_framework.settings import api_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +26,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    )
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
 }
 
 # Quick-start development settings - unsuitable for production
@@ -49,8 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "cars",
-    "personalInfo",
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -89,11 +91,22 @@ WSGI_APPLICATION = "api.wsgi.application"
 
 DATABASES = {
     "default": {
-        'NAME': 'db.sqlite3',
-        'ENGINE': 'django.db.backends.sqlite3',
-    }
+        'NAME': 'autohub365',
+        'ENGINE': 'django.db.backends.postgresql',
+        'USER': 'user',
+        'PASSWORD': 'pass',
+        'HOST': "localhost",
+        'PORT': '5432',
+    },
 }
 
+MONGODB_DATABASES = {
+    'mongo': {
+        'NAME': 'autohub365',
+        'HOST': 'localhost',
+        'PORT': 27017,
+    },
+}
 #MONGO_USER = 'user'
 #MONGO_PASS = 'pass'
 #MONGO_HOST = 'localhost'
@@ -124,6 +137,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_KNOX = {
+    'SECURE_HASH_ALGORITHM':'cryptography.hazmat.primitives.hashes.SHA512',
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64, # By default, it is set to 64 characters (this shouldn't need changing).
+    'TOKEN_TTL': timedelta(minutes=15), # The default is 10 hours i.e., timedelta(hours=10)).
+    'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+    'TOKEN_LIMIT_PER_USER': None, # By default, this option is disabled and set to None -- thus no limit.
+    'AUTO_REFRESH': False, # This defines if the token expiry time is extended by TOKEN_TTL each time the token is used.
+    'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -148,5 +170,5 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTHENTICATION_BACKENDS = (
-    'mongoengine.django.auth.MongoEngineBackend',
+    'knox.auth.TokenAuthentication',
 )

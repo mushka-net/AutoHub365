@@ -7,6 +7,7 @@ class Car(Document):
     year = IntField(required=True)
     color = StringField(required=True)
     price = IntField(required=True)
+    mileage = IntField(required=True)
     engine_capacity = FloatField(required=True)
     engine_type = StringField(required=True)
     transmission_type = StringField(required=True)

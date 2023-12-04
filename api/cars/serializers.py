@@ -4,11 +4,13 @@ from cars.models import Car
 class CarSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Car
+        using = 'mongo'
         fields = '__all__'
 
 class CarDetailSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Car
+        using = 'mongo'
         fields = '__all__'
         lookup_field = 'id'
 

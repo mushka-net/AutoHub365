@@ -12,11 +12,3 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Car.objects.all()
     serializer_class = CarDetailSerializer
     lookup_field = 'id'
-
-
-
-
-
-
-
-
