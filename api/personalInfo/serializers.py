@@ -10,4 +10,9 @@ class PersonalInfoDetailSerializer(serializers.DocumentSerializer):
     class Meta:
         model = PersonalInfo
         fields = '__all__'
-        lookup_field = 'id'
+        lookup_field = 'user_id'
+        extra_kwargs = {
+            'user_id': {
+                'required': False,
+            }
+        }

@@ -13,3 +13,4 @@ class Car(Document):
     transmission_type = StringField(required=True)
     description = StringField(required=True)
     image = StringField(required=True)
+    is_sold = BooleanField(required=True)

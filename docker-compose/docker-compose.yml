@@ -16,9 +16,9 @@ services:
   postgres:
     image: postgres:13.3
     environment:
-      - POSTGRES_DB = autohub365
-      - POSTGRES_USER = user
-      - POSTGRES_PASSWORD = pass
+      - POSTGRES_DB=autohub365
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
     ports:
       - "5432:5432"
     volumes:
