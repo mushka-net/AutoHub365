@@ -15,7 +15,19 @@ services:
     volumes:
       - ../autohub365-app:/app
       - /app/node_modules
+    depends_on:
+      - api
   
+  api:
+    build:
+      context: ../autohub365-api
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mongodb
+      - postgres
+
   mongodb:
     image: mongodb/mongodb-community-server:6.0-ubi8
     environment:
