@@ -3,6 +3,19 @@ version: '3.8'
 name: 'autohub365'
 
 services:
+  client:
+    build: 
+      context: ../autohub365-app
+      dockerfile: Dockerfile
+    container_name: autohub365-client
+    ports:
+      - '3000:3000'
+    environment:
+      WATCHPACK_POLLING: true
+    volumes:
+      - ../autohub365-app:/app
+      - /app/node_modules
+  
   mongodb:
     image: mongodb/mongodb-community-server:6.0-ubi8
     environment:
