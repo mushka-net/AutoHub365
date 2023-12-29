@@ -1,17 +1,15 @@
-from rest_framework_mongoengine import serializers
+from rest_framework_mongoengine import serializers as mongoserializers
 from cars.models import Car
 import base64
 
-class CarSerializer(serializers.DocumentSerializer):
-    image = serializers.FileField(required=False)
+class CarSerializer(mongoserializers.DocumentSerializer):
     class Meta:
         model = Car
         using = 'mongo'
         fields = '__all__'
 
 
-class CarDetailSerializer(serializers.DocumentSerializer):
-    image = serializers.FileField(required=False)
+class CarDetailSerializer(mongoserializers.DocumentSerializer):
     class Meta:
         model = Car
         using = 'mongo'
