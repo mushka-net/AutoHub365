@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'o%pp6@f!9u$q^mfkkbr4)a_*ddj5tlwlohz@z=g99#&tct)8ob'
 
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/app/staticfiles/'
@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'user',
         'PASSWORD': 'pass',
-        'HOST': "localhost",
+        'HOST': "postgres",
         'PORT': '5432',
     },
 }
@@ -95,12 +95,12 @@ DATABASES = {
 MONGODB_DATABASES = {
     'mongo': {
         'NAME': 'autohub365',
-        'HOST': 'localhost',
+        'HOST': 'mongodb',
         'PORT': 27017,
     },
 }
 
-CONNECTION_STRING = "mongodb://user:pass@localhost:27017/autohub365?authMechanism=DEFAULT"
+CONNECTION_STRING = "mongodb://user:pass@mongodb:27017/autohub365?authMechanism=DEFAULT"
 
 mongoengine.connect(host=CONNECTION_STRING, authentication_source='admin')
 
