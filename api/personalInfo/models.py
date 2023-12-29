@@ -8,3 +8,4 @@ class PersonalInfo(Document):
     phone = StringField(required=True, default=" ")
     email = StringField(required=True, default=" ")
     city = StringField(required=True, default=" ")
+    image = StringField(required=True, default=" ")

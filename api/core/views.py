@@ -1,8 +1,6 @@
-import requests
 from django.contrib.auth import login
 
-from rest_framework import generics, authentication, permissions, status
-from rest_framework.settings import api_settings
+from rest_framework import generics,  permissions, status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 
@@ -12,9 +10,6 @@ from knox.models import AuthToken
 
 from personalInfo.models import PersonalInfo
 from core.serializers import UserSerializer, AuthSerializer
-
-from rest_framework.authentication import SessionAuthentication
-
 
 
 class CreateUserView(generics.CreateAPIView):
