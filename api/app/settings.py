@@ -2,6 +2,7 @@ from pathlib import Path
 import mongoengine
 from datetime import timedelta
 from rest_framework.settings import api_settings
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,6 +14,9 @@ ALLOWED_HOSTS = []
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/app/staticfiles/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
