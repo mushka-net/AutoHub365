@@ -4,12 +4,12 @@ name: 'autohub365'
 
 services:
   client:
-    build: 
+    build:
       context: ../autohub365-app
       dockerfile: Dockerfile
     container_name: autohub365-client
     ports:
-      - '3000:3000'
+      - '5173:5173'
     environment:
       WATCHPACK_POLLING: true
     volumes:
@@ -17,7 +17,7 @@ services:
       - /app/node_modules
     depends_on:
       - api
-  
+
   api:
     build:
       context: ../autohub365-api
@@ -45,7 +45,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-data:/postgresql/data
 
