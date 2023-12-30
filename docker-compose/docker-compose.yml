@@ -15,6 +15,7 @@ services:
     volumes:
       - ../autohub365-app:/app
       - /app/node_modules
+      - static:/static
     depends_on:
       - api
 
@@ -22,6 +23,8 @@ services:
     build:
       context: ../autohub365-api
       dockerfile: Dockerfile
+    volumes:
+      - static:/api/staticfiles
     ports:
       - '8000:8000'
     depends_on:
@@ -50,5 +53,6 @@ services:
       - postgres-data:/postgresql/data
 
 volumes:
+  static:
   mongodata:
   postgres-data:

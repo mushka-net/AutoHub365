@@ -3,6 +3,8 @@ from django.urls import path, include
 from cars.views import CarViewSet, CarDetailViewSet
 from personalInfo.views import PersonalInfoDetailViewSet
 from orders.views import OrderViewSet, OrderDetailViewSet
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -14,3 +16,5 @@ urlpatterns = [
     path('api/orders', OrderViewSet.as_view()),
     path('api/orders/<str:id>', OrderDetailViewSet.as_view()),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

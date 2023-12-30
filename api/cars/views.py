@@ -6,14 +6,22 @@ from django.conf import settings
 from rest_framework_mongoengine import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework.parsers import MultiPartParser
+import uuid
 from knox.auth import TokenAuthentication
+
+def generate_unique_filename(filename):
+    _, file_extension = os.path.splitext(filename)
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    return unique_filename
 
 class CarViewSet(generics.ListCreateAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Car.objects.all()
     serializer_class = CarSerializer
+    parser_classes = (MultiPartParser,)
+
     def get_queryset(self):
         queryset = Car.objects.all()
         is_sold = bool(self.request.query_params.get('is_sold', None))
@@ -35,22 +43,24 @@ class CarViewSet(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         request.data['user_id'] = request.auth.user.id
+        request.data['image'] = request.data['image_data'].name
         return super(CarViewSet, self).create(request, *args, **kwargs)
 
+
     def perform_create(self, serializer):
-        image_data = self.request.data.get('image', None)
-        if image_data:
-            image_data = base64.b64decode(image_data)
-            image_name = f"{serializer.validated_data['brand']}_{serializer.validated_data['model']}_{serializer.validated_data['year']}_{serializer.validated_data['price']}.png"
-            image_path = os.path.join(settings.STATIC_ROOT, 'images', image_name)
+        image = self.request.data.get('image_data')
+        serializer.validated_data['image'] = image.name
+        image_name = generate_unique_filename(image.name)
 
-            with open(image_path, 'wb') as image_file:
-                image_file.write(image_data)
+        destination_path = os.path.join(settings.STATIC_ROOT, image_name)
+        with open(destination_path, 'wb+') as destination:
+            for chunk in image.chunks():
+                destination.write(chunk)
 
-            serializer.validated_data['image'] = image_path
-
-        serializer.save()
-
+        # Save the link to the file in the model
+        instance = serializer.save()
+        instance.image = f'{settings.STATIC_URL}{image_name}'
+        instance.save()
 
 class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication,)
@@ -60,7 +70,7 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
 
     def update(self, request, *args, **kwargs):
-        request.data['user_id'] = request.auth.user.idis
+        request.data['user_id'] = request.auth.user.id
         if int(request.auth.user.id) != int(Car.objects.get(id=kwargs['id']).user_id):
             raise PermissionDenied()
         return super(CarDetailViewSet, self).update(request, *args, **kwargs)
