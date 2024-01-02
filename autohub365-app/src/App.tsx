@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import Layout from './layouts/Layout';
 import Login from './pages/auth/Login';
@@ -11,10 +12,13 @@ import MyCars from './pages/marketplace/MyCars';
 import Orders from './pages/marketplace/Orders';
 import Profile from './pages/marketplace/Profile';
 import AddCar from './pages/marketplace/AddCar';
-import CarsList from './pages/marketplace/CarsList';
+import AllCars from './pages/marketplace/AllCars';
+import FilteredCars from './pages/marketplace/FilteredCars';
 import Car from './pages/marketplace/Car';
 
 import { CssBaseline } from '@mui/material';
+
+const queryClient = new QueryClient();
 
 function App() {
   useEffect(() => {
@@ -22,7 +26,7 @@ function App() {
   });
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <CssBaseline />
       <BrowserRouter>
         <Routes>
@@ -37,12 +41,13 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/add-car" element={<AddCar />} />
-            <Route path="/cars" element={<CarsList />} />
+            <Route path="/cars" element={<AllCars />} />
+            <Route path="/filtered-cars" element={<FilteredCars />} />
             <Route path="/cars/:id" element={<Car />} />
           </Route>
         </Routes>
       </BrowserRouter>
-    </>
+    </QueryClientProvider>
   );
 }
 

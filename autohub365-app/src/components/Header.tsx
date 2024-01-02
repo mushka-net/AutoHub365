@@ -14,6 +14,11 @@ import {
   Link,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useStore } from '../store/store';
+import { useLogoutMutation } from '../lib/react-query';
+import { useQuery } from 'react-query';
+import { getUserAvatar } from '../services/personal.service';
 
 const pages = [
   {
@@ -39,13 +44,10 @@ const settings = [
     title: 'Orders',
     href: '/orders',
   },
-  {
-    title: 'Logout',
-    href: '/logout',
-  },
 ];
 
 export default function Header() {
+  const [userAvatar, setUserAvatar] = React.useState<string | null>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -53,6 +55,26 @@ export default function Header() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const { userId, setUserToken } = useStore();
+
+  useQuery('user-avatar', () => getUserAvatar(userId!), {
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      setUserAvatar(data);
+    },
+  });
+
+  const { mutate, isLoading, isError, error } = useLogoutMutation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    mutate();
+    setUserToken(null);
+    navigate('/login');
+  };
+
   return (
     <header>
       <AppBar position="static">
@@ -80,7 +102,7 @@ export default function Header() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="User" />
+                  <Avatar alt="User" src={userAvatar!} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -100,16 +122,27 @@ export default function Header() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                    <Link
-                      component={RouterLink}
-                      to={setting.href}
-                      sx={{ textDecoration: 'none', color: 'black' }}
-                    >
+                  <Link
+                    component={RouterLink}
+                    to={setting.href}
+                    sx={{ textDecoration: 'none', color: 'black' }}
+                  >
+                    <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
                       {setting.title}
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                  </Link>
                 ))}
+                <Link
+                  component={RouterLink}
+                  to={'/login'}
+                  sx={{ textDecoration: 'none', color: 'black' }}
+                >
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography sx={{ textDecoration: 'none', color: 'black' }}>
+                      Logout
+                    </Typography>
+                  </MenuItem>
+                </Link>
               </Menu>
             </Box>
           </Toolbar>

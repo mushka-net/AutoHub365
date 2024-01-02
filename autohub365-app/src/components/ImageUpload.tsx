@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
-import { Box, Stack } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Stack, Typography } from '@mui/material';
 import { FormikProps } from 'formik';
-import { CarValues } from './AddCarForm';
+import { CarValues } from '../types';
 
-export default function ImageUpload({ formik }: { formik: FormikProps<CarValues> }) {
+export default function ImageUpload({
+  formik,
+  field,
+  isBase64,
+  image,
+}: {
+  formik: FormikProps<any>;
+  field: string;
+  isBase64: boolean;
+  image?: string;
+}) {
   const [base64, setBase64] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (image) {
+      setBase64(image);
+    }
+  }, [image]);
 
   const convertToBase64 = (file: File) => {
     return new Promise((resolve, reject) => {
@@ -23,15 +39,16 @@ export default function ImageUpload({ formik }: { formik: FormikProps<CarValues>
     const file = e.target.files![0];
     if (file?.size / 1024 / 1024 < 5) {
       const base64 = await convertToBase64(file);
-      formik.setFieldValue('image', base64);
-      setBase64(base64 as string);
+      if (isBase64) {
+        formik.setFieldValue(`${field}`, base64);
+        setBase64(base64 as string);
+      } else {
+        formik.setFieldValue(`${field}`, file);
+        setBase64(base64 as string);
+      }
     } else {
       alert('File must be less than 5MB');
     }
-  };
-
-  const onClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.currentTarget.value = '';
   };
 
   return (
@@ -47,16 +64,28 @@ export default function ImageUpload({ formik }: { formik: FormikProps<CarValues>
           mb: 1,
         }}
       >
-        {base64 && <img src={base64} alt="Picture of the car" />}
+        {base64 && (
+          <Box
+            component="img"
+            sx={{
+              objectFit: 'contain',
+              padding: 1,
+              width: '500px',
+              height: '300px',
+              borderRadius: 2,
+            }}
+            src={base64}
+            alt="Picture of the car"
+          />
+        )}
       </Box>
       <Box sx={{ width: '500px' }}>
         <input
           style={{ width: '100%' }}
           type="file"
-          name="car-image"
+          name="image"
           accept="image/*"
           multiple={false}
-          required
           onChange={(e) => onFileChange(e)}
         />
       </Box>

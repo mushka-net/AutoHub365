@@ -1,8 +1,35 @@
-import { Box, Grid, Paper, Typography, Link } from '@mui/material';
-import { ICar } from './types';
+import {
+  Box,
+  Grid,
+  Typography,
+  Link,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Modal,
+  Button,
+} from '@mui/material';
+import { ICar } from '../types';
 import { Link as RouterLink } from 'react-router-dom';
 
-export default function Car(car: ICar) {
+import React from 'react';
+import AddCarForm from './AddCarForm';
+import Car from '../pages/marketplace/Car';
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '70vw',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
+
+export default function CarItem({ car }: { car: ICar }) {
   const {
     id,
     brand,

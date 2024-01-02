@@ -1,6 +1,20 @@
-import { Box, Button, Link, Paper, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Link,
+  Paper,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+import { useStore } from '../../store/store';
+import { useRegisterMutation } from '../../lib/react-query';
+import { useState } from 'react';
 
 const validationSchema = yup.object({
   username: yup
@@ -24,6 +38,26 @@ interface RegisterValues {
 }
 
 export default function Register() {
+  const navigate = useNavigate();
+
+  const { setUserToken } = useStore();
+
+  const { mutate } = useRegisterMutation();
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   const formik = useFormik<RegisterValues>({
     initialValues: {
       username: '',
@@ -32,7 +66,15 @@ export default function Register() {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
+      mutate(values, {
+        onSuccess: (response) => {
+          setUserToken(response.data.token);
+          navigate('/home');
+        },
+        onError: (error) => {
+          handleOpen();
+        },
+      });
     },
   });
 
@@ -88,6 +130,11 @@ export default function Register() {
           Already have an account? <Link href="/login">Log in</Link>
         </Typography>
       </Paper>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Failed to register
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
