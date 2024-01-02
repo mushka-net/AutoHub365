@@ -71,29 +71,35 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         request.data['user_id'] = request.auth.user.id
-        request.data['image'] = request.data['image_data'].name
+        if 'image_data' in request.data:
+            request.data['image'] = request.data['image_data'].name
+        else:
+            request.data['image'] = Car.objects.get(id=kwargs['id']).image
         if int(request.auth.user.id) != int(Car.objects.get(id=kwargs['id']).user_id):
             raise PermissionDenied()
         return super(CarDetailViewSet, self).update(request, *args, **kwargs)
 
     def perform_update(self, serializer):
-        image = self.request.data.get('image_data')
-        old_image = Car.objects.get(id=self.kwargs['id']).image
-        old_image_name = old_image.split('/')[-1]
-        old_image_path = os.path.join(settings.STATIC_ROOT, old_image_name)
-        os.remove(old_image_path)
-        serializer.validated_data['image'] = image.name
-        image_name = generate_unique_filename(image.name)
+        if 'image_data' in self.request.data:
+            image = self.request.data.get('image_data')
+            old_image = Car.objects.get(id=self.kwargs['id']).image
+            old_image_name = old_image.split('/')[-1]
+            old_image_path = os.path.join(settings.STATIC_ROOT, old_image_name)
+            os.remove(old_image_path)
+            serializer.validated_data['image'] = image.name
+            image_name = generate_unique_filename(image.name)
 
-        destination_path = os.path.join(settings.STATIC_ROOT, image_name)
-        with open(destination_path, 'wb+') as destination:
-            for chunk in image.chunks():
-                destination.write(chunk)
+            destination_path = os.path.join(settings.STATIC_ROOT, image_name)
+            with open(destination_path, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
 
-        # Save the link to the file in the model
-        instance = serializer.save()
-        instance.image = f'{settings.STATIC_URL}{image_name}'
-        instance.save()
+            # Save the link to the file in the model
+            instance = serializer.save()
+            instance.image = f'{settings.STATIC_URL}{image_name}'
+            instance.save()
+        else:
+            serializer.save()
 
 
     def perform_destroy(self, instance):
