@@ -15,13 +15,12 @@ services:
     volumes:
       - ../autohub365-app:/app
       - /app/node_modules
-      - static:/static
+      - static:/app/static
     depends_on:
       - api
-
   api:
     build:
-      context: ../autohub365-api
+      context: ../api
       dockerfile: Dockerfile
     volumes:
       - static:/api/staticfiles
