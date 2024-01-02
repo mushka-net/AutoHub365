@@ -32,6 +32,7 @@ export default function Orders() {
     {
       onSuccess: (response) => {
         setBoughtOrders(response.data);
+        console.log(response.data);
       },
       onError: () => {
         setIsError(true);
