@@ -73,8 +73,6 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
         request.data['user_id'] = request.auth.user.id
         if 'image_data' in request.data:
             request.data['image'] = request.data['image_data'].name
-        else:
-            request.data['image'] = Car.objects.get(id=kwargs['id']).image
         if int(request.auth.user.id) != int(Car.objects.get(id=kwargs['id']).user_id):
             raise PermissionDenied()
         return super(CarDetailViewSet, self).update(request, *args, **kwargs)
@@ -94,13 +92,9 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
                 for chunk in image.chunks():
                     destination.write(chunk)
 
-            # Save the link to the file in the model
             instance = serializer.save()
             instance.image = f'{settings.STATIC_URL}{image_name}'
             instance.save()
-        else:
-            serializer.save()
-
 
     def perform_destroy(self, instance):
         image = instance.image
