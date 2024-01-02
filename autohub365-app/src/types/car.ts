@@ -26,5 +26,5 @@ export interface CarValues {
   engine_type: string;
   transmission_type: string;
   description: string;
-  image_data: string;
+  image_data?: string;
 }

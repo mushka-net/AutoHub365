@@ -40,7 +40,7 @@ interface RegisterValues {
 export default function Register() {
   const navigate = useNavigate();
 
-  const { setUserToken } = useStore();
+  const { setUserToken, setUserId } = useStore();
 
   const { mutate } = useRegisterMutation();
 
@@ -69,6 +69,7 @@ export default function Register() {
       mutate(values, {
         onSuccess: (response) => {
           setUserToken(response.data.token);
+          setUserId(response.data.user_id.toString());
           navigate('/home');
         },
         onError: (error) => {

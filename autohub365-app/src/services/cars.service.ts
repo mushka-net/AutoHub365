@@ -61,8 +61,29 @@ export const addCar = async (car: CarValues) => {
   form.append('engine_type', car.engine_type);
   form.append('transmission_type', car.transmission_type);
   form.append('description', car.description);
-  form.append('image_data', car.image_data);
+  if (car.image_data) {
+    form.append('image_data', car.image_data);
+  }
   const response = await axiosPrivate.post('/cars', form);
+  return response;
+};
+
+export const editCar = async (car: CarValues, id: string) => {
+  const form = new FormData();
+  form.append('brand', car.brand);
+  form.append('model', car.model);
+  form.append('year', car.year.toString());
+  form.append('color', car.color);
+  form.append('price', car.price.toString());
+  form.append('mileage', car.mileage.toString());
+  form.append('engine_capacity', car.engine_capacity.toString());
+  form.append('engine_type', car.engine_type);
+  form.append('transmission_type', car.transmission_type);
+  form.append('description', car.description);
+  if (car.image_data) {
+    form.append('image_data', car.image_data);
+  }
+  const response = await axiosPrivate.put(`/cars/${id}`, form);
   return response;
 };
 

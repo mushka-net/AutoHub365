@@ -14,9 +14,9 @@ import { useFormik, FormikProps, FormikBag } from 'formik';
 import * as yup from 'yup';
 import { NumericFormat } from 'react-number-format';
 import ImageUpload from './ImageUpload';
-import { useAddCarMutation } from '../lib/react-query';
+import { useAddCarMutation, useEditCarMutation } from '../lib/react-query';
 import { useQuery, useQueryClient } from 'react-query';
-import { CarValues } from '../types';
+import { CarValues, ICar } from '../types';
 import { useNavigate } from 'react-router-dom';
 import { getPersonalInfo } from '../services/personal.service';
 import { useStore } from '../store/store';
@@ -38,9 +38,18 @@ const validationSchema = yup.object({
   image_data: yup.mixed().required("Image can't be empty"),
 });
 
-export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
+export default function AddCarForm({
+  isEdit,
+  car,
+  handleCloseModal,
+}: {
+  isEdit?: boolean;
+  car?: ICar;
+  handleCloseModal?: () => void;
+}) {
   const navigate = useNavigate();
-  const { mutate } = useAddCarMutation();
+  const { mutate: mutateAdd } = useAddCarMutation();
+  const { mutate: mutateEdit } = useEditCarMutation();
   const { userId } = useStore();
   const queryClient = useQueryClient();
   const [isPersonalInfoEmpty, setIsPersonalInfoEmpty] = useState(false);
@@ -62,7 +71,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
   );
 
   const handleAddCar = (values: CarValues) => {
-    mutate(values, {
+    mutateAdd(values, {
       onSuccess: () => {
         queryClient.invalidateQueries('all-cars');
         navigate('/my-cars');
@@ -70,23 +79,62 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
     });
   };
 
+  const handleEditCar = (values: CarValues) => {
+    mutateEdit(
+      { data: values, id: car!.id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries('my-cars');
+          handleCloseModal!();
+        },
+      }
+    );
+  };
+
+  const initialValues =
+    isEdit && car
+      ? {
+          brand: car.brand,
+          model: car.model,
+          year: Number(car.year),
+          color: car.color,
+          price: Number(car.price),
+          mileage: Number(car.mileage),
+          engine_capacity: Number(car.engine_capacity),
+          engine_type: car.engine_type,
+          transmission_type: car.transmission_type,
+          description: car.description,
+          image_data: car.image,
+        }
+      : ({
+          brand: '',
+          model: '',
+          year: '',
+          color: '',
+          price: '',
+          mileage: '',
+          engine_capacity: '',
+          engine_type: '',
+          transmission_type: '',
+          description: '',
+          image_data: '',
+        } as CarValues);
+
   const formik: FormikProps<CarValues> = useFormik<CarValues>({
-    initialValues: {
-      brand: '',
-      model: '',
-      year: '',
-      color: '',
-      price: '',
-      mileage: '',
-      engine_capacity: '',
-      engine_type: '',
-      transmission_type: '',
-      description: '',
-      image_data: '',
-    },
+    initialValues: initialValues as CarValues,
     validationSchema: validationSchema,
     onSubmit: (values: CarValues) => {
-      handleAddCar(values);
+      if (isEdit) {
+        if (car!.image === values.image_data) {
+          const { image_data, ...rest } = values;
+          handleEditCar(rest);
+        } else {
+          handleEditCar(values);
+        }
+      }
+      if (!isEdit) {
+        handleAddCar(values);
+      }
     },
   });
 
@@ -96,6 +144,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
 
   return (
     <>
+      <pre>{JSON.stringify(formik.values, null, 2)}</pre>
       <Typography variant="h4" sx={{ mb: 1 }}>
         {isEdit ? 'Edit your car' : 'Sell your car'}
       </Typography>
@@ -150,6 +199,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
                 onBlur={formik.handleBlur}
                 error={formik.touched.year && Boolean(formik.errors.year)}
                 helperText={formik.touched.year && formik.errors.year}
+                value={formik.values.year}
                 onValueChange={(values) => {
                   const { value } = values;
                   formik.setFieldValue('year', value);
@@ -185,6 +235,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
                 onBlur={formik.handleBlur}
                 error={formik.touched.price && Boolean(formik.errors.price)}
                 helperText={formik.touched.price && formik.errors.price}
+                value={formik.values.price}
                 onValueChange={(values) => {
                   const { value } = values;
                   formik.setFieldValue('price', value);
@@ -209,6 +260,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
                 onBlur={formik.handleBlur}
                 error={formik.touched.mileage && Boolean(formik.errors.mileage)}
                 helperText={formik.touched.mileage && formik.errors.mileage}
+                value={formik.values.mileage}
                 onValueChange={(values) => {
                   const { value } = values;
                   formik.setFieldValue('mileage', value);
@@ -242,6 +294,7 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
                     helperText={
                       formik.touched.engine_capacity && formik.errors.engine_capacity
                     }
+                    value={formik.values.engine_capacity}
                     onValueChange={(values) => {
                       const { value } = values;
                       formik.setFieldValue('engine_capacity', value);
@@ -320,7 +373,12 @@ export default function AddCarForm({ isEdit }: { isEdit?: boolean }) {
                   alignItems: 'center',
                 }}
               >
-                <ImageUpload formik={formik} isBase64={false} field="image_data" />
+                <ImageUpload
+                  formik={formik}
+                  isBase64={false}
+                  field="image_data"
+                  image={isEdit ? car!.image : ''}
+                />
               </Grid>
             </Grid>
           </Stack>

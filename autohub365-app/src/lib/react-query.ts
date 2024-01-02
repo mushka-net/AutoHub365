@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
 import { login, register, logout } from '../services/auth.service';
-import { addCar, deleteCar } from '../services/cars.service';
+import { addCar, deleteCar, editCar } from '../services/cars.service';
 import { CarValues, ProfileValues } from '../types';
 import { updatePersonalInfo } from '../services/personal.service';
 import { createOrder } from '../services/orders.service';
@@ -26,6 +26,12 @@ export const useLogoutMutation = () => {
 export const useAddCarMutation = () => {
   return useMutation((data: CarValues) => {
     return addCar(data);
+  });
+};
+
+export const useEditCarMutation = () => {
+  return useMutation(({ data, id }: { data: CarValues; id: string }) => {
+    return editCar(data, id);
   });
 };
 

@@ -75,7 +75,7 @@ export default function CarItemManage({ car }: { car: ICar }) {
         aria-labelledby="modal-modal-edit-car"
       >
         <Box sx={style}>
-          <AddCarForm isEdit={true} />
+          <AddCarForm isEdit={true} car={car} handleCloseModal={handleEditClose} />
         </Box>
       </Modal>
       <Dialog open={openDelete} onClose={handleDeleteClose}>

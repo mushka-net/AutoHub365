@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { FormikProps } from 'formik';
-import { CarValues } from '../types';
 
 export default function ImageUpload({
   formik,
@@ -12,12 +11,16 @@ export default function ImageUpload({
   formik: FormikProps<any>;
   field: string;
   isBase64: boolean;
+  initialImage?: string;
   image?: string;
 }) {
   const [base64, setBase64] = useState<string | null>(null);
 
   useEffect(() => {
-    if (image) {
+    if (typeof image == typeof 'string' && !isBase64 && image) {
+      setBase64(image);
+    }
+    if (image && isBase64) {
       setBase64(image);
     }
   }, [image]);
