@@ -94,3 +94,12 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         instance.image = f'{settings.STATIC_URL}{image_name}'
         instance.save()
+
+
+    def perform_destroy(self, instance):
+        image = instance.image
+        image_name = image.split('/')[-1]
+        image_path = os.path.join(settings.STATIC_ROOT, image_name)
+        os.remove(image_path)
+        instance.delete()
+

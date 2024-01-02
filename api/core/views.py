@@ -36,6 +36,11 @@ class LoginView(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        if user is None:
+            return Response({
+                'status': 'Unauthorized',
+                'message': 'Username or password incorrect'
+            }, status=status.HTTP_401_UNAUTHORIZED)
         login(request, user)
         response_data = {
             'token': AuthToken.objects.create(user)[1],
