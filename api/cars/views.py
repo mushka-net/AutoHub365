@@ -70,6 +70,7 @@ class CarDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
 
     def update(self, request, *args, **kwargs):
+        request.data._mutable = True
         request.data['user_id'] = request.auth.user.id
         if 'image_data' in request.data:
             request.data['image'] = request.data['image_data'].name
