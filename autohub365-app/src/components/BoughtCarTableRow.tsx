@@ -25,17 +25,29 @@ export default function BoughtCarTableRow({ order }: { order: IOrder }) {
   };
 
   const open = Boolean(anchorEl);
-  const { data: car } = useQuery('order-bought-car', () => getCar(order.car), {
-    enabled: !!order.car,
-  });
+  const { data: car } = useQuery(
+    `order-bought-car-${order.id}`,
+    () => getCar(order.car),
+    {
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      enabled: !!order.car,
+    }
+  );
 
-  const { data: buyer } = useQuery('order-buyer', () => getPersonalInfo(order.buyer), {
-    enabled: !!order.buyer,
-  });
+  const { data: seller } = useQuery(
+    `order-buyer-${order.id}`,
+    () => getPersonalInfo(order.seller),
+    {
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      enabled: !!order.seller,
+    }
+  );
 
   return (
     <>
-      {car != undefined && buyer != undefined && (
+      {car != undefined && seller != undefined && (
         <TableRow>
           <TableCell>
             <Link component={RouterLink} to={`/cars/${car.data.id}`}>
@@ -44,7 +56,7 @@ export default function BoughtCarTableRow({ order }: { order: IOrder }) {
           </TableCell>
           <TableCell>{car?.data.price}$</TableCell>
           <TableCell>
-            +380 {buyer.phone}{' '}
+            +380 {seller.phone}{' '}
             <Button
               aria-describedby={order.id}
               onClick={handleClick}
@@ -66,10 +78,10 @@ export default function BoughtCarTableRow({ order }: { order: IOrder }) {
             >
               <Box sx={{ mx: 2, my: 1 }}>
                 <Typography>
-                  Name: {buyer.first_name} {buyer.last_name}
+                  Name: {seller.first_name} {seller.last_name}
                 </Typography>
-                <Typography>Location: {buyer.city}</Typography>
-                <Typography>Email: {buyer.email}</Typography>
+                <Typography>Location: {seller.city}</Typography>
+                <Typography>Email: {seller.email}</Typography>
               </Box>
             </Popover>
           </TableCell>

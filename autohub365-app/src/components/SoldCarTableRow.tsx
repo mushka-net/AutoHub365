@@ -26,17 +26,25 @@ export default function SoldCarTableRow({ order }: { order: IOrder }) {
 
   const open = Boolean(anchorEl);
 
-  const { data: car } = useQuery('order-sold-car', () => getCar(order.car), {
+  const { data: car } = useQuery(`order-sold-car-${order.id}`, () => getCar(order.car), {
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
     enabled: !!order.car,
   });
 
-  const { data: seller } = useQuery('order-seller', () => getPersonalInfo(order.buyer), {
-    enabled: !!order.buyer,
-  });
+  const { data: buyer } = useQuery(
+    `order-seller-${order.id}`,
+    () => getPersonalInfo(order.buyer),
+    {
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      enabled: !!order.buyer,
+    }
+  );
 
   return (
     <>
-      {car != undefined && seller != undefined && (
+      {car != undefined && buyer != undefined && (
         <TableRow>
           <TableCell>
             <Link component={RouterLink} to={`/cars/${car?.data.id}`}>
@@ -45,7 +53,7 @@ export default function SoldCarTableRow({ order }: { order: IOrder }) {
           </TableCell>
           <TableCell>{car.data.price}$</TableCell>
           <TableCell>
-            +380 {seller.phone}{' '}
+            +380 {buyer.phone}{' '}
             <Button
               aria-describedby={order.id}
               onClick={handleClick}
@@ -67,10 +75,10 @@ export default function SoldCarTableRow({ order }: { order: IOrder }) {
             >
               <Box sx={{ mx: 2, my: 1 }}>
                 <Typography>
-                  Name: {seller.first_name} {seller.last_name}
+                  Name: {buyer.first_name} {buyer.last_name}
                 </Typography>
-                <Typography>Location: {seller.city}</Typography>
-                <Typography>Email: {seller.email}</Typography>
+                <Typography>Location: {buyer.city}</Typography>
+                <Typography>Email: {buyer.email}</Typography>
               </Box>
             </Popover>
           </TableCell>
