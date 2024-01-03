@@ -66,13 +66,16 @@ export default function Header() {
     },
   });
 
-  const { mutate, isLoading, isError, error } = useLogoutMutation();
+  const { mutate, isSuccess } = useLogoutMutation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     mutate();
-    setUserToken(null);
-    navigate('/login');
+    if (isSuccess) {
+      handleCloseUserMenu();
+      navigate('/login');
+      setUserToken(null);
+    }
   };
 
   return (
@@ -123,21 +126,21 @@ export default function Header() {
               >
                 {settings.map((setting) => (
                   <Link
+                    key={setting.title}
                     component={RouterLink}
                     to={setting.href}
                     sx={{ textDecoration: 'none', color: 'black' }}
                   >
-                    <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                      {setting.title}
-                    </MenuItem>
+                    <MenuItem onClick={handleCloseUserMenu}>{setting.title}</MenuItem>
                   </Link>
                 ))}
                 <Link
                   component={RouterLink}
                   to={'/login'}
+                  onClick={handleLogout}
                   sx={{ textDecoration: 'none', color: 'black' }}
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem>
                     <Typography sx={{ textDecoration: 'none', color: 'black' }}>
                       Logout
                     </Typography>
