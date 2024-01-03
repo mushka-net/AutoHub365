@@ -144,7 +144,6 @@ export default function AddCarForm({
 
   return (
     <>
-      <pre>{JSON.stringify(formik.values, null, 2)}</pre>
       <Typography variant="h4" sx={{ mb: 1 }}>
         {isEdit ? 'Edit your car' : 'Sell your car'}
       </Typography>
