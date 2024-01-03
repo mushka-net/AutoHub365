@@ -373,6 +373,8 @@ export default function AddCarForm({
                 }}
               >
                 <ImageUpload
+                  width="525px"
+                  height="350px"
                   formik={formik}
                   isBase64={false}
                   field="image_data"

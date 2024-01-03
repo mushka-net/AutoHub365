@@ -3,11 +3,15 @@ import { Box } from '@mui/material';
 import { FormikProps } from 'formik';
 
 export default function ImageUpload({
+  width,
+  height,
   formik,
   field,
   isBase64,
   image,
 }: {
+  width: string;
+  height: string;
   formik: FormikProps<any>;
   field: string;
   isBase64: boolean;
@@ -59,11 +63,12 @@ export default function ImageUpload({
       <Box
         sx={{
           position: 'relative',
-          width: '500px',
-          height: '300px',
+          width: { width },
+          height: { height },
           border: 1,
           borderRadius: 2,
           borderColor: 'grey.400',
+          overflow: 'hidden',
           mb: 1,
         }}
       >
@@ -71,10 +76,9 @@ export default function ImageUpload({
           <Box
             component="img"
             sx={{
-              objectFit: 'contain',
-              padding: 1,
-              width: '500px',
-              height: '300px',
+              objectFit: 'cover',
+              width: '100%',
+              height: '100%',
               borderRadius: 2,
             }}
             src={base64}

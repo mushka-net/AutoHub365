@@ -65,7 +65,6 @@ export default function Car() {
         <CenteredLoadingSpinner />
       ) : (
         <>
-          {' '}
           <Container sx={{ py: 2 }}>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h3">
@@ -110,11 +109,10 @@ export default function Car() {
             <Box
               sx={{
                 position: 'relative',
-                width: '900px',
-                height: '500px',
+                width: '100%',
+                height: undefined,
                 mx: 'auto',
-                borderRadius: '15px',
-                overflow: 'hidden',
+                my: 3,
               }}
             >
               <img
@@ -122,6 +120,7 @@ export default function Car() {
                 alt="Picture of the car"
                 style={{
                   objectFit: 'cover',
+                  borderRadius: 10,
                   width: '100%',
                   height: '100%',
                 }}

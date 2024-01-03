@@ -47,7 +47,13 @@ export default function CarItem({ car }: { car: ICar }) {
   return (
     <Grid container justifyContent="space-between" spacing={2}>
       <Grid item>
-        <Box sx={{ position: 'relative', width: '300px', height: '200px' }}>
+        <Box
+          sx={{
+            position: 'relative',
+            width: '300px',
+            height: '200px',
+          }}
+        >
           <img
             src={image}
             alt="Picture of the car"

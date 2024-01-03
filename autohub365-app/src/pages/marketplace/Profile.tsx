@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Button,
   Container,
   Divider,
@@ -186,11 +187,14 @@ export default function Profile() {
                   helperText={formik.touched.city && formik.errors.city}
                 />
                 <ImageUpload
+                  width="300px"
+                  height="300px"
                   formik={formik}
                   isBase64={true}
                   field="image"
                   image={formik.values.image}
                 />
+
                 <Button variant="contained" color="success" type="submit">
                   Save
                 </Button>

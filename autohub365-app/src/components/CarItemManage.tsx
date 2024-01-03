@@ -69,15 +69,15 @@ export default function CarItemManage({ car }: { car: ICar }) {
           Delete
         </Button>
       </Box>
-      <Modal
-        open={openEdit}
-        onClose={handleEditClose}
-        aria-labelledby="modal-modal-edit-car"
-      >
-        <Box sx={style}>
+      <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="lg">
+        <Box
+          sx={{
+            p: 5,
+          }}
+        >
           <AddCarForm isEdit={true} car={car} handleCloseModal={handleEditClose} />
         </Box>
-      </Modal>
+      </Dialog>
       <Dialog open={openDelete} onClose={handleDeleteClose}>
         <DialogTitle>Are you sure you want to delete this car?</DialogTitle>
         <DialogContent>
